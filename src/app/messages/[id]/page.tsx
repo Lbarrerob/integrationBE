@@ -14,9 +14,7 @@ export default function MessageThreadPage() {
 
   useEffect(() => {
     // TODO: Change the URLs below to your real backend endpoints.
-    // Example:
-    //   fetch(`https://your-api.com/messages/${id}`)
-    //   fetch("https://your-api.com/messages")
+    
     Promise.all([
       fetch(`/api/messages/${id}`).then((res) => res.json()),
       fetch("/api/messages").then((res) => res.json()),

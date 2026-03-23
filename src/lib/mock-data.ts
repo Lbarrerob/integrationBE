@@ -271,3 +271,22 @@ export const CURRENT_USER_POSTS: Post[] = IMAGE_SEEDS.slice(0, 10).map((seed, i)
   isLiked: false,
   isSaved: false,
 }));
+
+// ── Current user's reels (for profile) ───────────────────────
+
+export const CURRENT_USER_REELS: Reel[] = MOCK_REELS.slice(0, 10).map((seed, i) => ({
+    id: `my_reel_${i + 1}`,
+    author: CURRENT_USER,
+    videoUrl: `https://picsum.photos/seed/myreel${seed}/400/700`,
+    thumbnailUrl: `https://picsum.photos/seed/myreel${seed}/400/700`,
+    caption: `My reel ${i + 1}`,
+    likesCount: 100 + i * 10,
+    commentsCount: 5 + i,
+    viewsCount: 1000 + i * 500,
+    createdAt: new Date(
+      Date.now() - i * 3_600_000
+    ).toISOString(),
+    isLiked: false,
+    audioTrack: "Original audio",
+  })
+);

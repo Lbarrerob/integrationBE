@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { User, Post } from "@/lib/types";
+import { User, Post, Reel } from "@/lib/types";
 import { CURRENT_USER } from "@/lib/mock-data";
 import Link from "next/link";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const { username } = useParams<{ username: string }>();
   const [user, setUser] = useState<User | null>(null);
+  const [reels, setReels] = useState<Reel[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,6 +18,18 @@ export default function ProfilePage() {
     // TODO: Change the URL below to your real backend endpoint.
     // Example: fetch(`https://your-api.com/profile/${username}`)
 
+    const fetchProfile = async () => {
+    const responde = await fetch(`http://localhost:3000/api/profile/${username}`)
+    const data = await responde.json();
+
+      console.log(data); 
+      setUser(data.user);
+      setPosts(data.posts);
+      setReels(data.reels);
+      setLoading(false);
+    }
+
+    fetchProfile();
   }, [username]);
 
   if (loading) return <div className="flex justify-center py-20 text-gray-400">Loading profile…</div>;
@@ -51,7 +65,8 @@ export default function ProfilePage() {
             ) : (
               <>
                 {/* TODO: Wire to POST /api/profile/[username]/follow */}
-                <button className="px-6 py-1.5 text-sm font-semibold bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                <button onClick={() => toast(`You are now following ${username}`)}
+                className="px-6 py-1.5 text-sm font-semibold bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
                   Follow
                 </button>
                 <Link href="/messages" className="px-4 py-1.5 text-sm font-semibold bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
@@ -66,13 +81,34 @@ export default function ProfilePage() {
               <span className="font-semibold">{user.postsCount.toLocaleString()}</span>
               <span className="text-sm text-gray-500 ml-1">posts</span>
             </div>
-            <button className="hover:opacity-70">
-              {/* TODO: fetch("/api/profile/[username]/followers") */}
+            {/* TODO: fetch("/api/profile/[username]/followers") */}
+            <button className="hover:opacity-70"
+                onClick={ () => {
+                          const fetchFollowers = async () => {
+                          const responde = await fetch(`/api/profile/${username}/followers`)
+                          const followers = await responde.json();
+
+                          console.log(followers);
+                        }
+
+                        fetchFollowers();
+                      }}>
               <span className="font-semibold">{user.followersCount.toLocaleString()}</span>
               <span className="text-sm text-gray-500 ml-1">followers</span>
             </button>
-            <button className="hover:opacity-70">
-              {/* TODO: fetch("/api/profile/[username]/following") */}
+
+            {/* TODO: fetch("/api/profile/[username]/following") */}
+            <button className="hover:opacity-70"
+              onClick={ () => {
+                          const fetchFollowing = async () => {
+                          const responde = await fetch(`/api/profile/${username}/following`)
+                          const following = await responde.json();
+
+                          console.log(following); 
+                        }
+
+                        fetchFollowing();
+                      }}>
               <span className="font-semibold">{user.followingCount.toLocaleString()}</span>
               <span className="text-sm text-gray-500 ml-1">following</span>
             </button>
@@ -98,8 +134,20 @@ export default function ProfilePage() {
           </svg>
           Posts
         </button>
+        
         {/* TODO: fetch(`/api/profile/${username}/reels`) on tab click */}
-        <button className="flex items-center gap-1.5 py-3 text-xs font-semibold uppercase tracking-widest text-gray-400">
+        <button className="flex items-center gap-1.5 py-3 text-xs font-semibold uppercase tracking-widest text-gray-400"
+          onClick={ () => {
+                      const fetchReels = async () => {
+                      const responde = await fetch(`/api/profile/${username}/reels`)
+                      const reels = await responde.json();
+
+                      console.log(reels); 
+                      setReels(reels);
+                    }
+
+                    fetchReels();
+                  }}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-4 h-4">
             <path strokeLinecap="round" strokeLinejoin="round" d="M3.375 9h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 20.625v-9.75C1.5 9.839 2.34 9 3.375 9z" />
           </svg>
@@ -116,16 +164,27 @@ export default function ProfilePage() {
       </div>
 
       {/* TODO (students): Render the posts grid here.
-           `posts` is an array of Post objects fetched above.
-           Each post has: id, imageUrl, caption, likesCount, commentsCount, author.
+           `posts` is an array of Post objects fetched above. Each post has: id, imageUrl, caption, likesCount, commentsCount, author.
            Display them in a 3-column grid (use grid grid-cols-3 gap-0.5).
            Each cell should be aspect-square with the post image filling it.
            Optionally show a hover overlay with likes/comments counts. */}
       <div className="flex flex-col items-center gap-3 py-16 text-gray-400">
-        <p className="font-semibold text-lg">Posts grid coming soon</p>
-        <p className="text-sm text-center max-w-xs">
-          Implement the posts grid in <code className="bg-gray-100 px-1 rounded text-gray-600">src/app/profile/[username]/page.tsx</code>
-        </p>
+          {posts.length === 0 ? (
+              <div className="text-center text-gray-400 py-10">No posts</div>
+          ) : (
+            <div className="grid grid-cols-3 gap-0.5">
+                {posts.map((post) => (
+              <div key={post.id}
+                className="aspect-square bg-gray-100">
+              
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={post.imageUrl}
+                  alt=""
+                  className="w-full h-full object-cover"/>
+              </div>
+              ))}
+            </div>
+        )}
       </div>
     </div>
   );
