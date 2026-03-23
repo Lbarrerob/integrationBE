@@ -16,10 +16,9 @@ export default function ProfilePage() {
 
   useEffect(() => {
     // TODO: Change the URL below to your real backend endpoint.
-    // Example: fetch(`https://your-api.com/profile/${username}`)
 
     const fetchProfile = async () => {
-    const responde = await fetch(`http://localhost:3000/api/profile/${username}`)
+    const responde = await fetch(`/api/profile/${username}`)
     const data = await responde.json();
 
       console.log(data); 

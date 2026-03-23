@@ -10,10 +10,9 @@ export default function MessagesPage() {
 
   useEffect(() => {
     // TODO: Change the URL below to your real backend endpoint.
-    // Example: fetch("https://your-api.com/messages")
 
     const fetchMessages = async () => {
-    const responde = await fetch("http://localhost:3000/api/messages")
+    const responde = await fetch("/api/messages")
     const data = await responde.json();
 
       console.log(data); 
